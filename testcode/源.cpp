@@ -1,26 +1,55 @@
 #include <iostream>
+#include <algorithm>
+#include <cstring>
 using namespace std;
+struct point
+{
+	double left;
+	double right;
+}p[1001];
+int cmp(const void *a, const void *b)
+{
+	return (*(point*)a).left >= (*(point*)b).left;
+}
 int main()
 {
-	//dp[i]为花费为i时最少花费钱数，c[i]为第i种钱的最大个数，ans[i][j]为价格为i时花了j种货币的值
-	//init
-	memset(dp, -1, sizeof(dp));
-	memset(ans, 0, sizeof(num));
-	dp[0] = 0;
-
-	for (int i = 0; i < N; i++) 
-		for (int j = v[i]; j <= V; j++) 
-			if (dp[j - v[i]] != -1 && dp[j - v[i]] + 1 > dp[j]) 
+	int n, d, t = 0;
+	cin.tie(0);
+	std::ios::sync_with_stdio(false);
+	while(cin >> n >> d && n != 0)
+	{
+		memset(p, 0, sizeof(p));
+		bool flag = true;
+		int tx, ty;
+		for(int i = 0; i < n; i++)
+		{
+			cin >> tx >> ty;
+			if(ty > d)
+				flag = false;
+			p[i].left = tx - sqrt(double(d * d - ty * ty));
+			p[i].right = tx + sqrt(double(d * d - ty * ty));
+		}
+		if (!flag)
+			cout << "Case " << ++t << ": " << -1 << endl;
+		else
+		{
+			double st;
+			qsort(p, n, sizeof(point), cmp);
+			int ans = 1;
+			st = p[0].right;
+			for(int i = 1; i < n; i++)
 			{
-				dp[j] = dp[j - v[i]] + 1;
-				for (int k = 0; k < N; k++) 
+				if (p[i].left > st)
 				{
-					if (k == i) 
-						ans[j][k] = ans[j - v[i]][k] + 1;
-					else
-						ans[j][k] = ans[j - v[i]][k];
+					st = p[i].right;
+					ans++;
 				}
+				else if (p[i].right < st)
+					st = p[i].right;
 			}
+			cout << "Case " << ++t << ": " << ans << endl;
+		}
+	}
 	system("pause");
 	return 0;
 }
